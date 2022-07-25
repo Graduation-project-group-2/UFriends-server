@@ -21,6 +21,11 @@ import javax.validation.Valid;
 public class UserController extends CommonController {
     private final UserService userService;
 
+    @GetMapping("/test/hello")
+    public String hello(){
+        return "Hello, U-Friends\n리액트, 스프링부트 연결 테스트";
+    }
+
     // 이메일 중복 확인
     @GetMapping("/user/emailValid")
     public ResponseEntity<?> emailValid(@RequestParam String email){
