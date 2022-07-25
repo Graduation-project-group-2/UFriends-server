@@ -1,6 +1,5 @@
 package com.gachon.ufriendsserver.api.service;
 
-import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.domain.User;
 import com.gachon.ufriendsserver.api.dto.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.LoginDTO;
