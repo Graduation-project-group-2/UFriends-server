@@ -13,6 +13,3 @@ include::{snippets}/join/http-response.adoc[]
 
 === Response Fields
 include::{snippets}/join/response-fields.adoc[]
-
-=== Path-Parameters
-include::{snippets}/join/path-parameters.adoc[]

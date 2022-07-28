@@ -1,7 +1,8 @@
 package com.gachon.ufriendsserver;
 
-import com.gachon.ufriendsserver.api.dto.JoinDTO;
+import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
 import com.gachon.ufriendsserver.api.service.MemberService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureRestDocs(uriScheme = "https", uriHost = "ufriends.com")
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "www.ufriends.com")
 @Transactional
 public class MemberControllerTest {
 
@@ -77,6 +77,51 @@ public class MemberControllerTest {
                 .build();
 
         memberService.join(joinDTO);
+    }
+
+    @AfterEach
+    public void clean(){
+        memberService.deleteUserByEmail(email);
+    }
+
+    @Test
+    public void emailValid() throws Exception {
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .get("/api/member/emailValid?email={email}", email)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("emailValid"
+                                , getDocumentResponse()
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+                                )
+                        ))
+                .andDo(print());
+    }
+
+    @Test
+    public void nicknameValid() throws Exception {
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .get("/api/member/nicknameValid?nickname={nickname}", nickname)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("nicknameValid"
+                                , getDocumentResponse()
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+                                )
+                        ))
+                .andDo(print());
     }
 
     @Test
@@ -120,32 +165,13 @@ public class MemberControllerTest {
                                         , fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호(보안 상 \"\")")
                                         , fieldWithPath("phoneNum").type(JsonFieldType.STRING).description("전화번호")
                                         , fieldWithPath("birthday").type(JsonFieldType.STRING).description("생년월일")
-                                        , fieldWithPath("joinDate").type(JsonFieldType.STRING).description("가입일자")
                                         )
                         ))
                 .andDo(print());
 
     }
 
-    @Test
-    public void emailValid() throws Exception {
 
-        ResultActions result = mockMvc.perform(
-                RestDocumentationRequestBuilders
-                        .get("/api/member/emailValid?email={email}", email)
-        );
-
-        result.andExpect(status().isOk())
-                .andDo(
-                        document("emailValid"
-                                , getDocumentResponse()
-                                , responseFields(
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
-                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
-                                )
-                        ))
-                .andDo(print());
-    }
 
     @Test
     public void login() throws Exception {
@@ -176,10 +202,10 @@ public class MemberControllerTest {
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
                                         , fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터")
                                 ).andWithPrefix("data.",
-                                        fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("멤버 고유 숫자")
+                                        fieldWithPath("token").type(JsonFieldType.STRING).description("토큰")
+                                        , fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("멤버 고유 숫자")
                                         , fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임")
                                         , fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")
-                                        , fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호(보안 상 \"\")")
                                         , fieldWithPath("phoneNum").type(JsonFieldType.STRING).description("전화번호")
                                         , fieldWithPath("birthday").type(JsonFieldType.STRING).description("생년월일")
                                         , fieldWithPath("joinDate").type(JsonFieldType.STRING).description("가입일자")
