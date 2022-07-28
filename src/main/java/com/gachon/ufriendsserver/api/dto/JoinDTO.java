@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class JoinDTO {
     @NotNull
-    private int userId;
+    private Integer memberId;
     @NotNull
     private String nickname;
     @NotNull

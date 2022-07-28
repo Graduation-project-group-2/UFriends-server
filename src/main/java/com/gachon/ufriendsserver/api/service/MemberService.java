@@ -1,9 +1,9 @@
 package com.gachon.ufriendsserver.api.service;
 
-import com.gachon.ufriendsserver.api.domain.User;
+import com.gachon.ufriendsserver.api.domain.Member;
 import com.gachon.ufriendsserver.api.dto.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.LoginDTO;
-import com.gachon.ufriendsserver.api.repository.UserRepository;
+import com.gachon.ufriendsserver.api.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,23 +14,23 @@ import java.util.Objects;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository;
+public class MemberService {
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
     public boolean isEmailExisting(String email){
-        return userRepository.findByEmail(email).isPresent();
+        return memberRepository.findByEmail(email).isPresent();
     }
 
     public boolean isNicknameExisting(String nickname){
-        return userRepository.findByNickname(nickname).isPresent();
+        return memberRepository.findByNickname(nickname).isPresent();
     }
 
-    public User join(JoinDTO joinDTO){
+    public Member join(JoinDTO joinDTO){
         String encodedPassword = passwordEncoder.encode(joinDTO.getPassword());
         joinDTO.setPassword(encodedPassword);
 
-        User user = User.builder()
+        Member member = Member.builder()
                 .nickname(joinDTO.getNickname())
                 .email(joinDTO.getEmail())
                 .password(joinDTO.getPassword())
@@ -38,21 +38,29 @@ public class UserService {
                 .birthday(joinDTO.getBirthday())
                 .build();
 
-        return userRepository.save(user);
+        return memberRepository.save(member);
     }
 
-    public User login(LoginDTO loginDTO){
+    public Member login(LoginDTO loginDTO){
         String encodedPassword = passwordEncoder.encode(loginDTO.getPassword());
         loginDTO.setPassword(encodedPassword);
 
-        User user = userRepository.findByEmail(loginDTO.getEmail()).orElseThrow(() -> new NullPointerException("NOT_FOUND_DATA"));
+        Member member = memberRepository.findByEmail(loginDTO.getEmail()).orElseThrow(() -> new NullPointerException("NOT_FOUND_DATA"));
 
-        boolean isUser = Objects.equals(user.getPassword(), loginDTO.getPassword());
+        boolean isUser = Objects.equals(member.getPassword(), loginDTO.getPassword());
 
         if(isUser)
-            return user;
+            return member;
         else
             return null;
+    }
+
+    public Member getMemberByMemberId(int memberId){
+        return memberRepository.findByMemberId(memberId).get();
+    }
+
+    public void deleteUserByEmail(String email){
+        memberRepository.delete(memberRepository.findByEmail(email).get());
     }
 
 }
