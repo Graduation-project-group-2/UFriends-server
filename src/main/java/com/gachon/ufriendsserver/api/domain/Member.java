@@ -15,28 +15,28 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Builder
-public class User {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private int userId;
+    @Column(nullable = false, name = "MEMBER_ID")
+    private int memberId;
 
-    @Column(nullable = false, name = "nickname")
+    @Column(nullable = false, unique = true, name = "NICKNAME")
     private String nickname;
 
-    @Column(nullable = false, unique = true, name = "email")
+    @Column(nullable = false, unique = true, name = "EMAIL")
     private String email;
 
-    @Column(nullable = false, name = "password")
+    @Column(nullable = false, name = "PASSWORD")
     private String password;
 
-    @Column(nullable = false, name = "phone_num")
+    @Column(nullable = false, unique = true, name = "PHONE_NUM")
     private String phoneNum;
 
-    @Column(nullable = false, name = "birthday")
+    @Column(nullable = false, name = "BIRTHDAY")
     private LocalDate birthday;
 
     @CreationTimestamp
-    @Column(name = "join_date")
+    @Column(nullable = false, name = "JOIN_DATE")
     private LocalDate joinDate;
 }

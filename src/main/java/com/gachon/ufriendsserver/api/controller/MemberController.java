@@ -2,24 +2,21 @@ package com.gachon.ufriendsserver.api.controller;
 
 import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.common.controller.CommonController;
-import com.gachon.ufriendsserver.api.common.dto.ResponseDTO;
-import com.gachon.ufriendsserver.api.domain.User;
+import com.gachon.ufriendsserver.api.domain.Member;
 import com.gachon.ufriendsserver.api.dto.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.LoginDTO;
-import com.gachon.ufriendsserver.api.service.UserService;
+import com.gachon.ufriendsserver.api.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController extends CommonController {
-    private final UserService userService;
+@RequestMapping("/api")
+public class MemberController extends CommonController {
+    private final MemberService memberService;
 
     @GetMapping("/test/hello")
     public String hello(){
@@ -27,37 +24,39 @@ public class UserController extends CommonController {
     }
 
     // 이메일 중복 확인
-    @GetMapping("/user/emailValid")
+    @GetMapping("/member/emailValid")
     public ResponseEntity<?> emailValid(@RequestParam String email){
-        if(userService.isEmailExisting(email))
+        if(memberService.isEmailExisting(email))
             return SuccessReturn();
         return ErrorReturn(ResponseCode.DUPLICATE_DATA);
     }
 
     // 닉네임 중복 확인
-    @GetMapping("/user/nicknameValid")
+    @GetMapping("/member/nicknameValid")
     public ResponseEntity<?> nicknameValid(@RequestParam String nickname){
-        if(userService.isNicknameExisting(nickname))
+        if(memberService.isNicknameExisting(nickname))
             return SuccessReturn();
         return ErrorReturn(ResponseCode.DUPLICATE_DATA);
     }
 
     // 회원가입
-    @PostMapping("/user/join")
-    public ResponseEntity<?> join(@Valid JoinDTO joinDTO){
+    @PostMapping("/member/join")
+    public ResponseEntity<?> join(@RequestBody JoinDTO joinDTO){
         String phoneNoUpdate = joinDTO.getPhoneNum().replaceAll("[^0-9]", "");
         joinDTO.setPhoneNum(phoneNoUpdate);
-        User user = userService.join(joinDTO);
 
-        return SuccessReturn(user);
+        Member member = memberService.join(joinDTO);
+        member.setPassword(""); // 보안
+
+        return SuccessReturn(member);
     }
 
     // 로그인
-    @PostMapping("/user/login")
-    public ResponseEntity<?> login(@Valid LoginDTO loginDTO){
-        User user = userService.login(loginDTO);
-        if(user != null)
-            return SuccessReturn();
+    @PostMapping("/member/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
+        Member member = memberService.login(loginDTO);
+        if(member != null)
+            return SuccessReturn(member);
 
         return ErrorReturn(ResponseCode.NOT_FOUND_DATA);
     }

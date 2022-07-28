@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
     id 'java'
     id 'war'
+    id "org.asciidoctor.jvm.convert" version "3.3.2" //1
 }
 
 group = 'com.gachon'
@@ -17,6 +18,25 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+//2
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+//3
+asciidoctor {
+    dependsOn test
+    attributes 'snippets': snippetsDir
+    inputs.dir snippetsDir
+}
+
+//4
+bootJar {
+    dependsOn asciidoctor
+    copy {
+        from "${asciidoctor.outputDir}"
+        into 'src/main/resources/static/docs'
+    }
 }
 bootWar {
     archiveName("UFriends.war")
@@ -40,6 +60,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-quartz'
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.19.0'
     implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+    implementation 'com.google.code.gson:gson:2.8.7'
+    // 5
+    // https://mvnrepository.com/artifact/org.springframework.restdocs/spring-restdocs-mockmvc
+    testImplementation group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc', version: '2.0.5.RELEASE'
 }
 
 tasks.named('test') {
