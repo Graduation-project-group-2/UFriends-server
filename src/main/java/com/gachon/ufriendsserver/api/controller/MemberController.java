@@ -1,22 +1,24 @@
 package com.gachon.ufriendsserver.api.controller;
 
 import com.gachon.ufriendsserver.api.common.ResponseCode;
+import com.gachon.ufriendsserver.api.common.config.TokenProvider;
 import com.gachon.ufriendsserver.api.common.controller.CommonController;
 import com.gachon.ufriendsserver.api.domain.Member;
-import com.gachon.ufriendsserver.api.dto.JoinDTO;
-import com.gachon.ufriendsserver.api.dto.LoginDTO;
+import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
+import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
+import com.gachon.ufriendsserver.api.dto.member.MemberDTO;
 import com.gachon.ufriendsserver.api.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class MemberController extends CommonController {
     private final MemberService memberService;
+    private final TokenProvider tokenProvider;
 
     @GetMapping("/test/hello")
     public String hello(){
@@ -27,16 +29,16 @@ public class MemberController extends CommonController {
     @GetMapping("/member/emailValid")
     public ResponseEntity<?> emailValid(@RequestParam String email){
         if(memberService.isEmailExisting(email))
-            return SuccessReturn();
-        return ErrorReturn(ResponseCode.DUPLICATE_DATA);
+            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
+        return SuccessReturn();
     }
 
     // 닉네임 중복 확인
     @GetMapping("/member/nicknameValid")
     public ResponseEntity<?> nicknameValid(@RequestParam String nickname){
         if(memberService.isNicknameExisting(nickname))
-            return SuccessReturn();
-        return ErrorReturn(ResponseCode.DUPLICATE_DATA);
+            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
+        return SuccessReturn();
     }
 
     // 회원가입
@@ -46,17 +48,37 @@ public class MemberController extends CommonController {
         joinDTO.setPhoneNum(phoneNoUpdate);
 
         Member member = memberService.join(joinDTO);
-        member.setPassword(""); // 보안
 
-        return SuccessReturn(member);
+        joinDTO.setMemberId(member.getMemberId());
+        joinDTO.setPassword(""); // 보안
+
+        if(memberService.getMemberByMemberId(member.getMemberId()) != null)
+            return SuccessReturn(joinDTO);
+
+        return ErrorReturn(ResponseCode.SOMETHING_WRONG);
     }
 
     // 로그인
     @PostMapping("/member/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
+
         Member member = memberService.login(loginDTO);
-        if(member != null)
-            return SuccessReturn(member);
+
+        if(member != null){
+            String token = tokenProvider.create(member);
+
+            MemberDTO memberDTO = MemberDTO.builder()
+                    .memberId(member.getMemberId())
+                    .email(member.getEmail())
+                    .nickname(member.getNickname())
+                    .phoneNum(member.getPhoneNum())
+                    .birthday(member.getBirthday())
+                    .joinDate(member.getJoinDate())
+                    .token(token)
+                    .build();
+
+            return SuccessReturn(memberDTO);
+        }
 
         return ErrorReturn(ResponseCode.NOT_FOUND_DATA);
     }
