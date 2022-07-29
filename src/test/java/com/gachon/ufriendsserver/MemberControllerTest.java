@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@AutoConfigureRestDocs(uriScheme = "https", uriHost = "www.ufriends.com")
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "docs.api.com")
 @Transactional
 public class MemberControllerTest {
 
@@ -52,6 +52,9 @@ public class MemberControllerTest {
 
     @Autowired
     private MemberService memberService;
+
+    public String validEmail = "valid@email.com";
+    public String validNickname = "valid";
 
     public DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     public String nickname = "tester";
@@ -85,7 +88,28 @@ public class MemberControllerTest {
     }
 
     @Test
-    public void emailValid() throws Exception {
+    public void emailValidSuccess() throws Exception {
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .get("/api/member/emailValid?email={email}", validEmail)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("emailValid-success"
+                                , getDocumentResponse()
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+                                )
+                        ))
+                .andDo(print());
+    }
+
+    @Test
+    public void emailValidFail() throws Exception {
 
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders
@@ -94,10 +118,11 @@ public class MemberControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(
-                        document("emailValid"
+                        document("emailValid-fail"
                                 , getDocumentResponse()
                                 , responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
                                         , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
                                 )
                         ))
@@ -105,7 +130,28 @@ public class MemberControllerTest {
     }
 
     @Test
-    public void nicknameValid() throws Exception {
+    public void nicknameValidSuccess() throws Exception {
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .get("/api/member/nicknameValid?nickname={nickname}", validNickname)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("nicknameValid-success"
+                                , getDocumentResponse()
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
+                                )
+                        ))
+                .andDo(print());
+    }
+
+    @Test
+    public void nicknameValidFail() throws Exception {
 
         ResultActions result = mockMvc.perform(
                 RestDocumentationRequestBuilders
@@ -114,10 +160,11 @@ public class MemberControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(
-                        document("nicknameValid"
+                        document("nicknameValid-fail"
                                 , getDocumentResponse()
                                 , responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
                                         , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
                                 )
                         ))
@@ -125,7 +172,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    public void join() throws Exception {
+    public void joinSuccess() throws Exception {
 
         String content = "{" +
                 "\"nickname\":\"test\"," +
@@ -145,7 +192,7 @@ public class MemberControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(
-                        document("join"
+                        document("join-success"
                                 , getDocumentRequest()
                                 , getDocumentResponse()
                                 , requestFields (
@@ -157,6 +204,7 @@ public class MemberControllerTest {
                                 )
                                 , responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
                                         , fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터")
                                 ).andWithPrefix("data.",
                                         fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("멤버 고유 숫자")
@@ -171,10 +219,8 @@ public class MemberControllerTest {
 
     }
 
-
-
     @Test
-    public void login() throws Exception {
+    public void loginSuccess() throws Exception {
 
         String content = "{" +
                 "\"email\":\"tester@email.com\"," +
@@ -191,7 +237,7 @@ public class MemberControllerTest {
 
         result.andExpect(status().isOk())
                 .andDo(
-                        document("login"
+                        document("login-success"
                                 , getDocumentRequest()
                                 , getDocumentResponse()
                                 , requestFields (
@@ -200,6 +246,7 @@ public class MemberControllerTest {
                                 )
                                 , responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
                                         , fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터")
                                 ).andWithPrefix("data.",
                                         fieldWithPath("token").type(JsonFieldType.STRING).description("토큰")
@@ -209,6 +256,41 @@ public class MemberControllerTest {
                                         , fieldWithPath("phoneNum").type(JsonFieldType.STRING).description("전화번호")
                                         , fieldWithPath("birthday").type(JsonFieldType.STRING).description("생년월일")
                                         , fieldWithPath("joinDate").type(JsonFieldType.STRING).description("가입일자")
+                                )
+                        ))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void loginFail() throws Exception {
+
+        String content = "{" +
+                "\"email\":\"tester1@email.com\"," +
+                "\"password\":\"qwerty1234\"" +
+                "}";
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .post("/api/member/login")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("login-fail"
+                                , getDocumentRequest()
+                                , getDocumentResponse()
+                                , requestFields (
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")
+                                        , fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
+                                )
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
+                                        , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
                                 )
                         ))
                 .andDo(print());

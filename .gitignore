@@ -38,3 +38,5 @@ out/
 
 *.yml
 *.properties
+
+**/src/docs/
