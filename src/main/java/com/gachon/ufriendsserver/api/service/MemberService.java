@@ -1,5 +1,6 @@
 package com.gachon.ufriendsserver.api.service;
 
+import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.domain.Member;
 import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
@@ -39,6 +40,7 @@ public class MemberService {
                     .build();
 
             memberRepository.save(member);
+
             return getMemberByEmail(joinDTO.getEmail());
         }
 
@@ -59,15 +61,15 @@ public class MemberService {
     }
 
     public Member getMemberByMemberId(int memberId){
-        return memberRepository.findByMemberId(memberId).get();
+        return memberRepository.findByMemberId(memberId).orElseThrow(() -> new NullPointerException(ResponseCode.NOT_FOUND_DATA.getMsg()));
     }
 
     public Member getMemberByEmail(String email){
-        return memberRepository.findByEmail(email).get();
+        return memberRepository.findByEmail(email).orElseThrow(() -> new NullPointerException(ResponseCode.NOT_FOUND_DATA.getMsg()));
     }
 
     public void deleteUserByEmail(String email){
-        memberRepository.delete(memberRepository.findByEmail(email).get());
+        memberRepository.delete(memberRepository.findByEmail(email).orElseThrow(() -> new NullPointerException(ResponseCode.NOT_FOUND_DATA.getMsg())));
     }
 
 

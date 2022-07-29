@@ -1,5 +1,6 @@
 package com.gachon.ufriendsserver.api.controller;
 
+import com.gachon.ufriendsserver.api.common.API;
 import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.common.config.TokenProvider;
 import com.gachon.ufriendsserver.api.common.controller.CommonController;
@@ -49,13 +50,15 @@ public class MemberController extends CommonController {
 
         Member member = memberService.join(joinDTO);
 
-        joinDTO.setMemberId(member.getMemberId());
-        joinDTO.setPassword(""); // 보안
+        if(member == null)
+            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
 
-        if(memberService.getMemberByMemberId(member.getMemberId()) != null)
+        if(memberService.getMemberByMemberId(member.getMemberId()) != null){
+            joinDTO.setMemberId(member.getMemberId());
+            joinDTO.setPassword(""); // 보안
             return SuccessReturn(joinDTO);
-
-        return ErrorReturn(ResponseCode.SOMETHING_WRONG);
+        }
+        return ErrorReturn(ResponseCode.UNKNOWN_ERROR);
     }
 
     // 로그인
