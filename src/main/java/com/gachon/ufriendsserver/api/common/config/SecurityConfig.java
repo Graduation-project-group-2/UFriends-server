@@ -17,16 +17,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+    protected void configure(HttpSecurity http) throws Exception{
+        http.cors()
                 .and()
-                .formLogin().disable()
-                .httpBasic().disable()
+                .csrf()
+                .disable()
+                .httpBasic()
+                .disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests()
-//				.antMatchers("/test").authenticated()
-                .anyRequest().permitAll();
+                .antMatchers("/", "/api/**").permitAll()
+                .anyRequest() // /와 /auth/**이외의 모든 경로는 인증 해야됨.
+                .authenticated();
+
     }
 }
