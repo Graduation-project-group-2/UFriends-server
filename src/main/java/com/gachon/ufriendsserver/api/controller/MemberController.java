@@ -1,17 +1,23 @@
 package com.gachon.ufriendsserver.api.controller;
 
-import com.gachon.ufriendsserver.api.common.API;
 import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.common.config.TokenProvider;
 import com.gachon.ufriendsserver.api.common.controller.CommonController;
 import com.gachon.ufriendsserver.api.domain.Member;
+import com.gachon.ufriendsserver.api.domain.Social;
 import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
+import com.gachon.ufriendsserver.api.dto.member.LoginNaverDTO;
 import com.gachon.ufriendsserver.api.dto.member.MemberDTO;
 import com.gachon.ufriendsserver.api.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @RestController
@@ -63,7 +69,7 @@ public class MemberController extends CommonController {
 
     // 로그인
     @PostMapping("/member/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO){
 
         Member member = memberService.login(loginDTO);
 
@@ -88,6 +94,39 @@ public class MemberController extends CommonController {
 
     // 비밀번호 찾기
 
+    // 네이버 로그인
+    @PostMapping("/member/login/naver")
+    public ResponseEntity<?> naverLogin(@RequestParam("n_birthday") String n_birthday,
+                             @RequestParam("n_birthyear") String n_birthyear,
+                             @RequestParam("n_email") String n_email,
+                             @RequestParam("n_id") String n_id,
+                             @RequestParam("n_nickName") String n_nickName,
+                             @RequestParam("n_phoneNum") String n_phoneNum) {
+
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+
+        String birthday = n_birthday + "-" + n_birthyear;
+
+        LoginNaverDTO loginNaverDTO = LoginNaverDTO.builder()
+                .memberId(Integer.parseInt(n_id))
+                .email(n_email)
+                .nickname(n_nickName)
+                .phoneNum(n_phoneNum)
+                .birthday(LocalDate.parse(birthday, inputFormat))
+                .social(Social.NAVER)
+                .build();
+
+        Member member = memberService.loginNaver(loginNaverDTO);
+
+        if(member != null)
+            return SuccessReturn(loginNaverDTO);
+
+        return ErrorReturn(ResponseCode.NAVER_LOGIN_ERROR);
+    }
+
+    // 카카오 로그인
+
+    // 구글 로그인
 
 
 }

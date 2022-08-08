@@ -297,4 +297,43 @@ public class MemberControllerTest {
 
     }
 
+    @Test
+    public void naverLogin() throws Exception{
+
+
+        String content = "{" +
+                "\"client_id\":\"Gf28tJefRsVbMULlOjF6\"" +
+                "}";
+
+
+        ResultActions result = mockMvc.perform(
+                RestDocumentationRequestBuilders
+                        .post("https://nid.naver.com/oauth2.0/authorize")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        
+
+        result.andExpect(status().isOk())
+                .andDo(
+                        document("join-success"
+                                , getDocumentRequest()
+                                , getDocumentResponse()
+                                , requestFields (
+                                        fieldWithPath("client_id").type(JsonFieldType.STRING).description("client_id")
+                                )
+                                , responseFields(
+                                        fieldWithPath("code").type(JsonFieldType.STRING).description("code")
+                                        , fieldWithPath("state").type(JsonFieldType.STRING).description("state")
+                                        , fieldWithPath("error").type(JsonFieldType.STRING).description("error")
+                                        , fieldWithPath("error_description").type(JsonFieldType.STRING).description("error_description")
+                                )
+                        ))
+                .andDo(print());
+
+
+    }
+
 }

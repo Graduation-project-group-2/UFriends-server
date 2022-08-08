@@ -4,6 +4,7 @@ import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.domain.Member;
 import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
+import com.gachon.ufriendsserver.api.dto.member.LoginNaverDTO;
 import com.gachon.ufriendsserver.api.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,6 +59,20 @@ public class MemberService {
         }
 
         return member;
+    }
+
+    public Member loginNaver(LoginNaverDTO loginNaverDTO){
+        Member member = Member.builder()
+                .nickname(loginNaverDTO.getNickname())
+                .email(loginNaverDTO.getEmail())
+                .password("")
+                .phoneNum(loginNaverDTO.getPhoneNum())
+                .birthday(loginNaverDTO.getBirthday())
+                .build();
+
+        memberRepository.save(member);
+
+        return getMemberByEmail(loginNaverDTO.getEmail());
     }
 
     public Member getMemberByMemberId(int memberId){

@@ -39,4 +39,8 @@ public class Member {
     @CreationTimestamp
     @Column(nullable = false, name = "JOIN_DATE")
     private LocalDate joinDate;
+
+    @Column(nullable = true, name="SOCIAL")
+    @Enumerated(EnumType.STRING)
+    private Social social;
 }
