@@ -210,9 +210,10 @@ public class MemberControllerTest {
                                         fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("멤버 고유 숫자")
                                         , fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임")
                                         , fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")
-                                        , fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호(보안 상 \"\")")
                                         , fieldWithPath("phoneNum").type(JsonFieldType.STRING).description("전화번호")
                                         , fieldWithPath("birthday").type(JsonFieldType.STRING).description("생년월일")
+                                        , fieldWithPath("token").type(JsonFieldType.NULL).description("토큰(로그인 시 발급)")
+                                        , fieldWithPath("joinDate").type(JsonFieldType.STRING).description("가입일자")
                                         )
                         ))
                 .andDo(print());

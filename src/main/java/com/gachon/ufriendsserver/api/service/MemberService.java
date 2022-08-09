@@ -48,17 +48,32 @@ public class MemberService {
         return null;
     }
 
-    public Member login(LoginDTO loginDTO){
-        String encodedPassword = passwordEncoder.encode(loginDTO.getPassword());
-        loginDTO.setPassword(encodedPassword);
+//    public Member login(LoginDTO loginDTO){
+//        String encodedPassword = passwordEncoder.encode(loginDTO.getPassword());
+//        loginDTO.setPassword(encodedPassword);
+//
+//        Member member = getMemberByEmail(loginDTO.getEmail());
+//        if(member != null){
+//            System.out.println(member.getPassword());
+//            System.out.println(loginDTO.getPassword());
+//            if(member.getPassword() == loginDTO.getPassword())
+//                return member;
+//        }
+//
+//        return null;
+//    }
 
-        Member member = getMemberByEmail(loginDTO.getEmail());
-        if(member != null){
-            if(member.getPassword() == loginDTO.getPassword())
-                return member;
+    public Member getByCredentials(String email, String password, final PasswordEncoder passwordEncoder){
+        try {
+            Member originalMember = getMemberByEmail(email);
+            if(originalMember != null && passwordEncoder.matches(password, originalMember.getPassword())){
+                return originalMember;
+            }
+        } catch (Exception e){
+
         }
 
-        return member;
+        return null;
     }
 
     public Member loginNaver(LoginNaverDTO loginNaverDTO){
