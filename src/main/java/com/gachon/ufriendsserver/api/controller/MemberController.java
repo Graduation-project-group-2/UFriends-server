@@ -72,18 +72,6 @@ public class MemberController extends CommonController {
         return SuccessReturn(memberDTO);
     }
 
-    // 로그인
-//    @PostMapping("/member/login")
-//    public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO){
-//
-//        Member member = memberService.login(loginDTO);
-//
-//        if(member != null)
-//            return SuccessReturn(member);
-//
-//        return ErrorReturn(ResponseCode.NOT_FOUND_DATA);
-//    }
-
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@Validated @RequestBody LoginDTO loginDTO){
         Member member = memberService.getByCredentials(loginDTO.getEmail(), loginDTO.getPassword(), passwordEncoder);
