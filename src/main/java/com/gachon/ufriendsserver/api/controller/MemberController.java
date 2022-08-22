@@ -32,7 +32,7 @@ public class MemberController extends CommonController {
 
     @GetMapping("/hello")
     public String hello(){
-        return "Hello, U-Friends. 젠킨스 테스트 중입니다.";
+        return "Hello, U-Friends. Jenkins 테스트 중입니다.";
     }
 
     // 이메일 중복 확인
