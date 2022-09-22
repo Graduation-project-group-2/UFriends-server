@@ -4,10 +4,8 @@ import com.gachon.ufriendsserver.api.common.ResponseCode;
 import com.gachon.ufriendsserver.api.common.controller.CommonController;
 import com.gachon.ufriendsserver.api.common.security.TokenProvider;
 import com.gachon.ufriendsserver.api.domain.Member;
-import com.gachon.ufriendsserver.api.domain.Social;
 import com.gachon.ufriendsserver.api.dto.member.JoinDTO;
 import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
-import com.gachon.ufriendsserver.api.dto.member.LoginNaverDTO;
 import com.gachon.ufriendsserver.api.dto.member.MemberDTO;
 import com.gachon.ufriendsserver.api.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
@@ -32,7 +27,7 @@ public class MemberController extends CommonController {
 
     @GetMapping("/hello")
     public String hello(){
-        return "Hello, U-Friends. Jenkins 테스트 중입니다.";
+        return "Hello, U-Friends.";
     }
 
     // 이메일 중복 확인
@@ -74,7 +69,7 @@ public class MemberController extends CommonController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@Validated @RequestBody LoginDTO loginDTO){
-        Member member = memberService.getByCredentials(loginDTO.getEmail(), loginDTO.getPassword(), passwordEncoder);
+        Member member = memberService.login(loginDTO, passwordEncoder);
 
         if(member != null){
             String token = tokenProvider.create(member);
@@ -98,39 +93,6 @@ public class MemberController extends CommonController {
 
     // 비밀번호 찾기
 
-    // 네이버 로그인
-    @PostMapping("/member/login/naver")
-    public ResponseEntity<?> naverLogin(@RequestParam("n_birthday") String n_birthday,
-                             @RequestParam("n_birthyear") String n_birthyear,
-                             @RequestParam("n_email") String n_email,
-                             @RequestParam("n_id") String n_id,
-                             @RequestParam("n_nickName") String n_nickName,
-                             @RequestParam("n_phoneNum") String n_phoneNum) {
-
-        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-
-        String birthday = n_birthday + "-" + n_birthyear;
-
-        LoginNaverDTO loginNaverDTO = LoginNaverDTO.builder()
-                .memberId(Integer.parseInt(n_id))
-                .email(n_email)
-                .nickname(n_nickName)
-                .phoneNum(n_phoneNum)
-                .birthday(LocalDate.parse(birthday, inputFormat))
-                .social(Social.NAVER)
-                .build();
-
-        Member member = memberService.loginNaver(loginNaverDTO);
-
-        if(member != null)
-            return SuccessReturn(loginNaverDTO);
-
-        return ErrorReturn(ResponseCode.NAVER_LOGIN_ERROR);
-    }
-
-    // 카카오 로그인
-
-    // 구글 로그인
 
 
 }

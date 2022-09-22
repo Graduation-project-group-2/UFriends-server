@@ -29,9 +29,7 @@ import static com.gachon.ufriendsserver.ApiDocumentUtils.getDocumentRequest;
 import static com.gachon.ufriendsserver.ApiDocumentUtils.getDocumentResponse;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -248,15 +246,7 @@ public class MemberControllerTest {
                                 , responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태코드")
                                         , fieldWithPath("msg").type(JsonFieldType.STRING).description("메시지")
-                                        , fieldWithPath("data").type(JsonFieldType.OBJECT).description("데이터")
-                                ).andWithPrefix("data.",
-                                        fieldWithPath("token").type(JsonFieldType.STRING).description("토큰")
-                                        , fieldWithPath("memberId").type(JsonFieldType.NUMBER).description("멤버 고유 숫자")
-                                        , fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임")
-                                        , fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")
-                                        , fieldWithPath("phoneNum").type(JsonFieldType.STRING).description("전화번호")
-                                        , fieldWithPath("birthday").type(JsonFieldType.STRING).description("생년월일")
-                                        , fieldWithPath("joinDate").type(JsonFieldType.STRING).description("가입일자")
+                                        , fieldWithPath("data").type(JsonFieldType.NULL).description("데이터")
                                 )
                         ))
                 .andDo(print());
@@ -297,44 +287,5 @@ public class MemberControllerTest {
                 .andDo(print());
 
     }
-
-//    @Test
-//    public void naverLogin() throws Exception{
-//
-//
-//        String content = "{" +
-//                "\"client_id\":\"Gf28tJefRsVbMULlOjF6\"" +
-//                "}";
-//
-//
-//        ResultActions result = mockMvc.perform(
-//                RestDocumentationRequestBuilders
-//                        .post("https://nid.naver.com/oauth2.0/authorize")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON)
-//        );
-//
-//
-//
-//        result.andExpect(status().isOk())
-//                .andDo(
-//                        document("join-success"
-//                                , getDocumentRequest()
-//                                , getDocumentResponse()
-//                                , requestFields (
-//                                        fieldWithPath("client_id").type(JsonFieldType.STRING).description("client_id")
-//                                )
-//                                , responseFields(
-//                                        fieldWithPath("code").type(JsonFieldType.STRING).description("code")
-//                                        , fieldWithPath("state").type(JsonFieldType.STRING).description("state")
-//                                        , fieldWithPath("error").type(JsonFieldType.STRING).description("error")
-//                                        , fieldWithPath("error_description").type(JsonFieldType.STRING).description("error_description")
-//                                )
-//                        ))
-//                .andDo(print());
-//
-//
-//    }
 
 }
