@@ -13,8 +13,6 @@ public class API {
 
         public static final int LOGIN_ERROR = 501;
 
-        public static final int NAVER_LOGIN_ERROR = 601;
-
         public static final int UNKNOWN_ERROR = 1000;
     }
 

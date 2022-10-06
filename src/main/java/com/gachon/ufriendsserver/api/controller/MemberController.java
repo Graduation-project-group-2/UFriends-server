@@ -46,6 +46,15 @@ public class MemberController extends CommonController {
         return SuccessReturn();
     }
 
+    // 전화번호 중복 확인
+    @GetMapping("/phoneNumValid")
+    public ResponseEntity<?> phoneNumValid(@RequestParam String phoneNum){
+        String phoneNoUpdate = phoneNum.replaceAll("[^0-9]", "");
+        if(memberService.isPhoneNumExisting(phoneNoUpdate))
+            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
+        return SuccessReturn();
+    }
+
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<?> join(@Validated @RequestBody JoinDTO joinDTO, HttpServletResponse response){
