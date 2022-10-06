@@ -27,6 +27,10 @@ public class MemberService {
         return memberRepository.findByNickname(nickname).isPresent();
     }
 
+    public boolean isPhoneNumExisting(String phoneNum){
+        return memberRepository.findByPhoneNum(phoneNum).isPresent();
+    }
+
     public Member join(JoinDTO joinDTO){
 
         if(!isEmailExisting(joinDTO.getEmail()) && !isNicknameExisting(joinDTO.getNickname())){
