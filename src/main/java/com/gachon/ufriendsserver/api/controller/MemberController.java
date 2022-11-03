@@ -42,7 +42,7 @@ public class MemberController extends CommonController {
 
 //        System.setProperty("python.import.site", "false"); // jython-standalone이 아닐 경우 site 모듈 에러 해결 방안
         interpreter = new PythonInterpreter();
-        interpreter.execfile("src/main/python/kodial.py");
+        interpreter.execfile("./src/main/python/kodial.py");
         interpreter.exec("print(chat('hello'))");
 
         PyFunction pyFunction = interpreter.get("chat", PyFunction.class);
