@@ -41,6 +41,7 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.19.0'
+    implementation group: 'org.python', name: 'jython-standalone', version: '2.7.2'
 }
 
 tasks.named('test') {

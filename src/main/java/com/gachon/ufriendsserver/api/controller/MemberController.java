@@ -9,6 +9,11 @@ import com.gachon.ufriendsserver.api.dto.member.LoginDTO;
 import com.gachon.ufriendsserver.api.dto.member.MemberDTO;
 import com.gachon.ufriendsserver.api.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.python.core.PyFunction;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.util.PythonInterpreter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,12 +27,32 @@ import javax.servlet.http.HttpServletResponse;
 public class MemberController extends CommonController {
 
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private static PythonInterpreter interpreter;
 
     @GetMapping("/hello")
     public String hello(){
         return "Hello, U-Friends.";
+    }
+
+    @GetMapping("/pytest")
+    public String pytest() {
+
+//        System.setProperty("python.import.site", "false"); // jython-standalone이 아닐 경우 site 모듈 에러 해결 방안
+        interpreter = new PythonInterpreter();
+        interpreter.execfile("src/main/python/kodial.py");
+        interpreter.exec("print(chat('hello'))");
+
+        PyFunction pyFunction = interpreter.get("chat", PyFunction.class);
+
+        String userInput = "hello";
+
+        PyObject pyobj = pyFunction.__call__(new PyString(userInput));
+        System.out.println(pyobj.toString());
+
+        return pyobj.toString();
     }
 
     // 이메일 중복 확인
@@ -77,26 +102,17 @@ public class MemberController extends CommonController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticate(@Validated @RequestBody LoginDTO loginDTO){
-        Member member = memberService.login(loginDTO, passwordEncoder);
+    public ResponseEntity<?> login(@Validated @RequestBody LoginDTO loginDTO){
+        Member member = memberService.getByCredentials(loginDTO.getEmail(), passwordEncoder.encode(loginDTO.getPassword()), passwordEncoder);
 
         if(member != null){
-            String token = tokenProvider.create(member);
-
-            MemberDTO memberDTO = MemberDTO.builder()
-                    .memberId(member.getMemberId())
-                    .email(member.getEmail())
-                    .nickname(member.getNickname())
-                    .birthday(member.getBirthday())
-                    .phoneNum(member.getPhoneNum())
-                    .token(token)
-                    .joinDate(member.getJoinDate())
-                    .build();
-
+            final String token = tokenProvider.create(member);
+            final MemberDTO memberDTO = MemberDTO.builder().email(member.getEmail()).email(member.getEmail()).token(token).build();
             return SuccessReturn(memberDTO);
         } else {
             return ErrorReturn(ResponseCode.LOGIN_ERROR);
         }
+
     }
 
 
