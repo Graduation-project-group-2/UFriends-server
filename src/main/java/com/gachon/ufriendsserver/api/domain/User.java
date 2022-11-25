@@ -15,11 +15,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Entity
 @Builder
-public class Member {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, name = "MEMBER_ID")
-    private int memberId;
+    @Column(nullable = false, name = "USER_ID")
+    private int userId;
 
     @Column(nullable = false, unique = true, name = "NICKNAME")
     private String nickname;

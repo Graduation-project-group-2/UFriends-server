@@ -1,4 +1,4 @@
-package com.gachon.ufriendsserver.api.dto.member;
+package com.gachon.ufriendsserver.api.dto.user;
 
 import lombok.Builder;
 import lombok.Data;
