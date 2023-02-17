@@ -23,6 +23,7 @@ public class UserController extends CommonController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody LoginDTO loginDTO){
         User user = userService.login(loginDTO);
@@ -37,7 +38,7 @@ public class UserController extends CommonController {
     }
 
     // 이메일 중복 확인
-    @PostMapping("/emailCheck/{email}")
+    @GetMapping("/emailCheck/{email}")
     public ResponseEntity<?> emailCheck(@PathVariable String email){
         if(userService.isEmailExisting(email))
             return ErrorReturn(ResponseCode.DUPLICATE_DATA);
@@ -45,28 +46,16 @@ public class UserController extends CommonController {
     }
 
     // 닉네임 중복 확인
-    @PostMapping("/nicknameCheck/{nickname}")
+    @GetMapping("/nicknameCheck/{nickname}")
     public ResponseEntity<?> nicknameCheck(@PathVariable String nickname){
         if(userService.isNicknameExisting(nickname))
             return ErrorReturn(ResponseCode.DUPLICATE_DATA);
         return SuccessReturn();
     }
 
-    // 전화번호 중복 확인
-    @PostMapping("/phoneNumCheck/{phoneNum}")
-    public ResponseEntity<?> phoneNumCheck(@PathVariable String phoneNum){
-        String phoneNoUpdate = phoneNum.replaceAll("[^0-9]", "");
-        if(userService.isPhoneNumExisting(phoneNoUpdate))
-            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
-        return SuccessReturn();
-    }
-
     // 회원가입
     @PostMapping("/join")
-    public ResponseEntity<?> join(@Validated @RequestBody JoinDTO joinDTO, HttpServletResponse response) {
-        if (userService.isEmailExisting(joinDTO.getEmail())) // Email 중복확인
-            return ErrorReturn(ResponseCode.DUPLICATE_DATA);
-
+    public ResponseEntity<?> join(@Validated @RequestBody JoinDTO joinDTO) {
         User user = userService.join(joinDTO);
 
         return SuccessReturn(user);
@@ -75,7 +64,6 @@ public class UserController extends CommonController {
     // 비밀번호 변경 - Account Page
     @PutMapping("/changePassword")
     public ResponseEntity<?> changePassword(@Validated @RequestBody LoginDTO loginDTO) {
-        // 사용자 확인 - 토큰 사용
         userService.changePassword(loginDTO.getEmail(), loginDTO.getPassword());
         return SuccessReturn();
     }
@@ -86,6 +74,5 @@ public class UserController extends CommonController {
         userService.deleteUser(userId);
         return SuccessReturn();
     }
-
 
 }

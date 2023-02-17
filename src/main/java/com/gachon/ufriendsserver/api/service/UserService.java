@@ -24,17 +24,11 @@ public class UserService {
         return userRepository.findByNickname(nickname).isPresent();
     }
 
-    public boolean isPhoneNumExisting(String phoneNum){
-        return userRepository.findByPhoneNum(phoneNum).isPresent();
-    }
-
     public User join(JoinDTO joinDTO){
         User user = User.builder()
                 .email(joinDTO.getEmail())
                 .nickname(joinDTO.getNickname())
                 .password(passwordEncoder.encode(joinDTO.getPassword()))
-                .phoneNum(joinDTO.getPhoneNum().replaceAll("[^0-9]", ""))
-                .birthday(joinDTO.getBirthday())
                 .build();
 
         userRepository.save(user);
