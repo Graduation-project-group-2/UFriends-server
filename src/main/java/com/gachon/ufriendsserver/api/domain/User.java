@@ -18,26 +18,19 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, name = "USER_ID")
+    @Column(nullable = false, name = "user_id")
     private int userId;
 
-    @Column(nullable = false, unique = true, name = "NICKNAME")
+    @Column(nullable = false, unique = true, name = "nickname")
     private String nickname;
 
-    @Column(nullable = false, unique = true, name = "EMAIL")
+    @Column(nullable = false, unique = true, name = "email")
     private String email;
 
-    @Column(nullable = false, name = "PASSWORD")
+    @Column(nullable = false, name = "password")
     private String password;
 
-    @Column(nullable = false, unique = true, name = "PHONE_NUM")
-    private String phoneNum;
-
-    @Column(nullable = false, name = "BIRTHDAY")
-    private LocalDate birthday;
-
     @CreationTimestamp
-    @Column(nullable = false, name = "JOIN_DATE")
-    private LocalDate joinDate;
-
+    @Column(nullable = false, name = "created_at")
+    private LocalDate createdAt;
 }
