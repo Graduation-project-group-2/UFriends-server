@@ -30,7 +30,7 @@ public class UserController extends CommonController {
 
         if(user != null){
             String token = tokenProvider.create(user);
-            UserDTO responseUserDTO = UserDTO.builder().email(user.getEmail()).userId(user.getUserId()).token(token).build();
+            UserDTO responseUserDTO = UserDTO.builder().email(user.getEmail()).nickname(user.getNickname()).userId(user.getUserId()).token(token).createdAt(user.getCreatedAt()).build();
             return SuccessReturn(responseUserDTO);
         } else {
             return ErrorReturn(ResponseCode.LOGIN_ERROR);
@@ -56,9 +56,7 @@ public class UserController extends CommonController {
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<?> join(@Validated @RequestBody JoinDTO joinDTO) {
-        User user = userService.join(joinDTO);
-
-        return SuccessReturn(user);
+        return SuccessReturn(userService.join(joinDTO).setPassword(""));
     }
 
     // 비밀번호 변경 - Account Page

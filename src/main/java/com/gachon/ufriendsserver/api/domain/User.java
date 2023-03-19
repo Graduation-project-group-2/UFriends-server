@@ -1,19 +1,16 @@
 package com.gachon.ufriendsserver.api.domain;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
 @Builder
 public class User {
     @Id
@@ -33,4 +30,9 @@ public class User {
     @CreationTimestamp
     @Column(nullable = false, name = "created_at")
     private LocalDate createdAt;
+
+    public User setPassword(String password){
+        this.password = password;
+        return this;
+    }
 }
