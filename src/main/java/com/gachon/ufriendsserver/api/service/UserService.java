@@ -49,6 +49,9 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User getUserById(Integer userId){
+        return userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("NOT FOUND USER"));
+    }
 
     // 회원탈퇴
     public void deleteUser(int userId) {
