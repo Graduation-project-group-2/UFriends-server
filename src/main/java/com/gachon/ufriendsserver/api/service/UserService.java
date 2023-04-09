@@ -25,15 +25,11 @@ public class UserService {
     }
 
     public User join(JoinDTO joinDTO){
-        User user = User.builder()
+        return userRepository.save(User.builder()
                 .email(joinDTO.getEmail())
                 .nickname(joinDTO.getNickname())
                 .password(passwordEncoder.encode(joinDTO.getPassword()))
-                .build();
-
-        userRepository.save(user);
-
-        return user;
+                .build());
     }
 
     public User login(LoginDTO loginDTO){
@@ -53,6 +49,9 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User getUserById(Integer userId){
+        return userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("NOT FOUND USER"));
+    }
 
     // 회원탈퇴
     public void deleteUser(int userId) {

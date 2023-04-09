@@ -30,7 +30,7 @@ public class UserController extends CommonController {
 
         if(user != null){
             String token = tokenProvider.create(user);
-            UserDTO responseUserDTO = UserDTO.builder().email(user.getEmail()).userId(user.getUserId()).token(token).build();
+            UserDTO responseUserDTO = UserDTO.builder().email(user.getEmail()).nickname(user.getNickname()).userId(user.getUserId()).token(token).createdAt(user.getCreatedAt()).build();
             return SuccessReturn(responseUserDTO);
         } else {
             return ErrorReturn(ResponseCode.LOGIN_ERROR);
@@ -38,16 +38,16 @@ public class UserController extends CommonController {
     }
 
     // 이메일 중복 확인
-    @GetMapping("/emailCheck/{email}")
-    public ResponseEntity<?> emailCheck(@PathVariable String email){
+    @GetMapping("/email")
+    public ResponseEntity<?> emailCheck(@RequestParam String email){
         if(userService.isEmailExisting(email))
             return ErrorReturn(ResponseCode.DUPLICATE_DATA);
         return SuccessReturn();
     }
 
     // 닉네임 중복 확인
-    @GetMapping("/nicknameCheck/{nickname}")
-    public ResponseEntity<?> nicknameCheck(@PathVariable String nickname){
+    @GetMapping("/nickname")
+    public ResponseEntity<?> nicknameCheck(@RequestParam String nickname){
         if(userService.isNicknameExisting(nickname))
             return ErrorReturn(ResponseCode.DUPLICATE_DATA);
         return SuccessReturn();
@@ -56,20 +56,23 @@ public class UserController extends CommonController {
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<?> join(@Validated @RequestBody JoinDTO joinDTO) {
-        User user = userService.join(joinDTO);
-
-        return SuccessReturn(user);
+        return SuccessReturn(userService.join(joinDTO).setPassword(""));
     }
 
     // 비밀번호 변경 - Account Page
-    @PutMapping("/changePassword")
+    @PutMapping("/password")
     public ResponseEntity<?> changePassword(@Validated @RequestBody LoginDTO loginDTO) {
         userService.changePassword(loginDTO.getEmail(), loginDTO.getPassword());
         return SuccessReturn();
     }
 
+    @GetMapping("/myAccount")
+    public ResponseEntity<?> getUserInfo(@RequestParam Integer userId){
+        return SuccessReturn(userService.getUserById(userId));
+    }
+
     // 회원탈퇴
-    @DeleteMapping(value = {"/deleteUser/{userId}", "/deleteUser"})
+    @DeleteMapping(value = {"/{userId}"})
     public ResponseEntity<?> deleteUser(@PathVariable(value = "userId") Integer userId) {
         userService.deleteUser(userId);
         return SuccessReturn();

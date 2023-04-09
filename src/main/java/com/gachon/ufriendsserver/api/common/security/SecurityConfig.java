@@ -33,8 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.httpBasic().disable()
 				.authorizeRequests()
 				// myAccount
-				.antMatchers("/myAccount").authenticated()
-				.antMatchers("/changePassword").authenticated()
+				.antMatchers("/api/user/password").authenticated()
+				.antMatchers("/api/user/myAccount").authenticated()
 				.anyRequest().permitAll();
 	}
 }
