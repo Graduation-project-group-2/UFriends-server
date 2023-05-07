@@ -49,6 +49,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 본인 인증
+    public User resetPassword(String email, String nickname){
+        if(userRepository.findByEmail(email).isPresent()){
+            User user = userRepository.findByEmail(email).get();
+            if(user.getNickname().equals(nickname)){
+                return user;
+            }
+        }
+        return null;
+    }
+
     public User getUserById(Integer userId){
         return userRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("NOT FOUND USER"));
     }

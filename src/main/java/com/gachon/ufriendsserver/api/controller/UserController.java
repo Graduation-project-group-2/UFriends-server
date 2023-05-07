@@ -59,16 +59,27 @@ public class UserController extends CommonController {
         return SuccessReturn(userService.join(joinDTO).setPassword(""));
     }
 
-    // 비밀번호 변경 - Account Page
+    // 로그인 후 또는 인증 후 비밀번호 변경
     @PutMapping("/password")
     public ResponseEntity<?> changePassword(@Validated @RequestBody LoginDTO loginDTO) {
         userService.changePassword(loginDTO.getEmail(), loginDTO.getPassword());
         return SuccessReturn();
     }
 
+    // 로그인 전 비밀번호 변경(찾기)을 위하여 이메일과 닉네임 인증 받기
+    @GetMapping("/checkUser")
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String nickname){
+        User user = userService.resetPassword(email, nickname);
+        if(user == null){
+            return ErrorReturn(ResponseCode.NOT_FOUND_DATA);
+        }
+        return SuccessReturn(user);
+    }
+
     @GetMapping("/myAccount")
     public ResponseEntity<?> getUserInfo(@RequestParam Integer userId){
-        return SuccessReturn(userService.getUserById(userId));
+        User user = userService.getUserById(userId);
+        return SuccessReturn(user.setPassword(""));
     }
 
     // 회원탈퇴
