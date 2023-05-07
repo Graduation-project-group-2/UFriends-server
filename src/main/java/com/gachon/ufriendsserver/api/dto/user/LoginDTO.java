@@ -1,12 +1,13 @@
 package com.gachon.ufriendsserver.api.dto.user;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class LoginDTO {
     @NotNull
     private String email;
