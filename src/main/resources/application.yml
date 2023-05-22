@@ -1,9 +1,10 @@
 spring:
   profiles:
-    active: dev
+    active: local
   datasource:
-    username: admin
-    password: Ufriends789!
+    url:
+    username:
+    password:
     driverClassName: org.mariadb.jdbc.Driver
     hikari:
       connectionTimeout: 30000
@@ -12,15 +13,3 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: update
-
----
-spring:
-  profiles: dev
-  datasource:
-    url: jdbc:mariadb://ufriends.cvtx7e9jgnfm.us-west-2.rds.amazonaws.com/ufriends
-
-# ---
-# spring:
-#   profiles: real
-#   datasource:
-#     url:
